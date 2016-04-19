@@ -14,6 +14,9 @@ body {
 h1, h2, h3 {
   font-weight: normal;
 }
+img {
+  margin: 1em 0;
+}
 @media screen and (min-width: 320px) {
   body {
     font-size: calc(14px + 8 * ((100vw - 320px) / 960));
@@ -84,6 +87,38 @@ h1, h2, h3 {
     <li>Bowdoin ’13 (Math)</li>
   </ul>
 
+  <img src="toph-still-sm.gif">
+  <audio src="alive.mp3"></audio>
+
 </body>
+
+<script>
+
+var image = document.querySelector('img'),
+    audio = document.querySelector('audio');
+
+image.addEventListener('mouseenter', play);
+
+image.addEventListener('mouseleave', pause);
+
+image.addEventListener('touchstart', function() {
+  if(audio.paused || !audio.currentTime) {
+    play();
+  } else {
+    pause();
+  }
+});
+
+function play() {
+  image.setAttribute('src', 'toph-animated-sm.gif');
+  audio.play();
+}
+
+function pause() {
+  image.setAttribute('src', 'toph-still-sm.gif');
+  audio.pause();
+}
+
+</script>
 
 </html>
