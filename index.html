@@ -14,9 +14,24 @@ body {
 h1, h2, h3 {
   font-weight: normal;
 }
-img {
-  margin: 1em 0;
+
+
+.underlying {
+  opacity: 0;
+  pointer-events: none;
 }
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.overlay span {
+  position: absolute;
+}
+
+
 @media screen and (min-width: 320px) {
   body {
     font-size: calc(14px + 8 * ((100vw - 320px) / 960));
@@ -31,93 +46,193 @@ img {
 </style>
 
 <body>
-    
-  <h1>Toph Tucker</h1>
-  <p>
-    Web programmer at Bloomberg Businessweek. 
-    <a href="https://twitter.com/tophtucker/">Twitter</a>, 
-    <a href="https://github.com/tophtucker">GitHub</a>, 
-    <a href="http://bl.ocks.org/tophtucker">bl.ocks</a>,
-    <a href="https://medium.com/@tophtucker/">Medium</a>,
-    tophtucker@gmail.com
-  </p>
+  
+  <div class="underlying"></div>
 
-  <h2>Data graphics and explainers</h2>
+  <div class="overlay"></div>
 
-  <ul>
-    <li><a href="http://www.bloomberg.com/features/2015-stock-chart-trading-game/">The Trading Game</a> (& <a href="http://www.bloomberg.com/features/2015-stock-chart-trading-game/analysis/">analysis</a>)</li>
-    <li><a href="http://www.bloomberg.com/features/2016-etf-files/toy/">How ETFs Work</a></li>
-    <li><a href="http://www.bloomberg.com/graphics/2015-how-to-rig-libor-interactive/">How to Rig Libor</a></li>
-    <li><a href="http://www.bloomberg.com/features/2016-flipcharts/superbowl/">Flipcharts</a> (& <a href="http://www.bloomberg.com/features/2016-flipcharts/demo/">more</a>)</li>
-    <li><a href="http://bl.ocks.org/tophtucker/214ee520bfdfe8baabe5">Romeo & Juliet phase portrait</a></li>
-    <li><a href="http://www.businessweek.com/graphics/2014_bwg_bitcoin/index.html">How to Mine Bitcoin</a></li>
-  </ul>
-
-  <h2>Web design for features</h2>
-
-  <ul>
-    <li><a href="http://www.bloomberg.com/graphics/2015-paul-ford-what-is-code/">What Is Code</a> (<a href="https://github.com/BloombergMedia/whatiscode">2,600 stars on GitHub!</a>)</li>
-    <li><a href="http://www.bloomberg.com/features/2016-design/">The Design Issue</a></li>
-    <li><a href="http://www.bloomberg.com/graphics/2015-ketamine-depression-treatment/">The Ketamine Cure</a></li>
-    <li><a href="http://www.bloomberg.com/graphics/2014-the-business-of-isis-spreadsheets-annual-reports-and-terror/#/">The Banality of Islamic State</a></li>
-    <li><a href="http://www.bloomberg.com/features/2016-benjamin-wey/">The Art of the Smear</a></li>
-    <li><a href="http://www.bloomberg.com/graphics/2015-atm-bombers/">Boom: Inside a British Bank-Bombing Spree</a></li>
-    <!-- http://www.bloomberg.com/features/2015-bloomberg-book-list/ -->
-    <!-- http://www.bloomberg.com/features/2015-hospital-hack/ -->
-    <!-- http://www.bloomberg.com/features/2016-microsoft-research/ -->
-    <!-- http://www.bloomberg.com/features/2116-the-year-ahead/ -->
-    <!-- http://www.bloomberg.com/graphics/2015-doug-williams-war-on-lie-detector/ -->
-    <!-- um, photo annotations stuff... -->
-  </ul>
-
-  <h2>My writing</h2>
-
-  <ul>
-    <li><a href="http://bowdoinorient.com/article/9173">Life per second</a></li>
-    <li><a href="http://bowdoinorient.com/article/10278">What you’re working for</a></li>
-    <li><a href="http://bowdoinorient.com/article/4323">Local stores contend with slow economy</a></li>
-  </ul>
-
-  <h2>Other</h2>
-
-  <ul>
-    <li><a href="http://howlongwillittakemyicecreamtomelt.com">howlongwillittakemyicecreamtomelt.com</a></li>
-    <li><a href="http://bowdoinorient.com">Made a CMS frontend & backend</a></li>
-    <li><a href="http://www.bizweekgraphics.com/swoopyarrows/">Swoopy Arrows</a></li>
-    <li>Bowdoin ’13 (Math)</li>
-  </ul>
-
-  <img src="toph-still-sm.gif">
-  <audio src="alive.mp3"></audio>
+  <template id="home">
+    <h1>Toph Tucker</h1>
+    <p>
+      Web programmer at Kensho, formerly Businessweek. 
+      <a href="https://twitter.com/tophtucker/">Twitter</a>, 
+      <a href="https://github.com/tophtucker">GitHub</a>, 
+      <a href="http://bl.ocks.org/tophtucker">bl.ocks</a>,
+      <a href="https://medium.com/@tophtucker/">Medium</a>,
+      tophtucker@gmail.com
+    </p>
+  </template>
 
 </body>
 
+<script src="d3.v4.js"></script>
 <script>
 
-var image = document.querySelector('img'),
-    audio = document.querySelector('audio');
+var projects = [
+  {
+    title: 'The Trading Game',
+    slug: 'the-trading-game',
+    url: 'http://www.bloomberg.com/features/2015-stock-chart-trading-game/',
+    date: 'October 2015',
+    byline: '',
+    description: 'This little mobile-first chart game abuses the very chic aesthetic of the very serious Bloomberg Terminal to (1) waste time and (2) confront the vanity of expecting market-beating returns by assuming the future will look like the past. So the game has an unstated thesis, which it argues just by showing you your results, like what Ian Bogost calls “procedural rhetoric”: the ability of a game, or any system of interaction, to make a point.'
+  },
 
-image.addEventListener('mouseenter', play);
+  {
+    title: 'How ETFs Work',
+    slug: 'how-etfs-work',
+    url: 'http://www.bloomberg.com/features/2016-etf-files/toy/',
+    date: 'March 2016',
+    byline: '',
+    description: 'What’s an exchange-traded fund (ETF), and how do people make money on it? For the big banks, the answer turns out to be, in a mathematically precise way: you get paid to balance a big see-saw of weights of various sizes, rolling up and down as prices move. That seems to make it easier to understand. A small child could do it. People go, “That’s it??”, and that feels like a triumph. People intuitively understand complex systems all around them all the time! You just need to code up a rigorous graphical-geometrical-mechanical metaphor.'
+  },
 
-image.addEventListener('mouseleave', pause);
-
-image.addEventListener('touchstart', function() {
-  if(audio.paused || !audio.currentTime) {
-    play();
-  } else {
-    pause();
+  {
+    title: 'Experiments in typography',
+    slug: 'experiments-in-typography',
+    url: 'http://www.tophtucker.com/type/',
+    date: 'April 2015',
+    byline: '',
+    description: '“Plain text” is sometimes treated (especially by programmers!) like a solved problem. You have these letters, proportionally sized and spaced and kerned, and one comes after the next, and they wrap onto lines in some grid. If you want to get fancy maybe you have ligatures. Watching the designers at Businessweek – who can, like, do valley girl intonation in type — disabused me of that worldview. Lots of people are trying great things and of course it’s hard to compete with convention on a meaningful scale here, but I’ll try — nothing fancy with the fonts here per se, just some more dynamic setting.'
   }
-});
+];
 
-function play() {
-  image.setAttribute('src', 'toph-animated-sm.gif');
-  audio.play();
+handleNav();
+
+function split(container) {
+  if(!container.childNodes.length) {
+    var letters = container.textContent.split('');
+    return letters.map(function(d) { return '<span class="ltr">' + d + '</span>'; }).join('');
+  } else {
+    var html = '';
+    for(var i = 0; i < container.childNodes.length; i++) {
+      html += split(container.childNodes[i]);
+    }
+    container.innerHTML = html;
+    return container.outerHTML;
+  }
 }
 
-function pause() {
-  image.setAttribute('src', 'toph-still-sm.gif');
-  audio.pause();
+function computePositions(container) {
+
+  // compute positions and styles of letters as rendered
+  d3.select(container).selectAll('span.ltr')
+    .datum(function(d,i) {
+      var styles = window.getComputedStyle(this);
+      return {
+        letter: this.textContent,
+        i: i,
+        char: this.textContent.charCodeAt(0),
+        x: this.offsetLeft,
+        y: this.offsetTop,
+        fontSize: styles['font-size'],
+        fontWeight: styles['font-weight'],
+        fontStyle: styles['font-style'],
+        color: styles['color']
+      }
+    });
+
+  // attach links to children spans 
+  // (since they'll be disassociated from the dom tree)
+  d3.select(container).selectAll('a').each(function() {
+    var href = this.attributes.href.value;
+    d3.select(this).selectAll('span.ltr')
+      .each(function(d) {
+        d.href = href;
+      })
+  });
+
+  var data = d3.select(container).selectAll('span.ltr').data();
+
+  // for every letter, find it's the nth letter of its kind
+  var nester = d3.nest().key(function(d) { return d.char; });
+  var data = d3.merge(nester.entries(data).map(function(d) { 
+    return d.values.map(function(dd, ii) { 
+      dd.charI = ii;
+      dd.key = d.key + '-' + ii;
+      return dd;
+    }); 
+  })).sort(function(a,b) {
+    return a.i - b.i;
+  });
+
+  return data;
 }
+
+function render(data) {
+
+  var letters = d3.select('.overlay')
+    .selectAll('span')
+    .data(data, function(d) { return d.key; });
+
+  letters.enter().append('span')
+    .text(function(d) { return d.letter; })
+    .text(function(d) { return d.letter; })
+    .style('left', function() { return '1000px'; })
+  .merge(letters)
+    .on('click', function(d) {
+      if(d.href) window.location = d.href;
+    })
+  .transition()
+    .duration(1000)
+    .style('left', function(d) { return d.x + 'px'; })
+    .style('top', function(d) { return d.y + 'px'; })
+    .style('font-size', function(d) { return d.fontSize; })
+    .style('font-weight', function(d) { return d.fontWeight; })
+    .style('font-style', function(d) { return d.fontStyle; })
+    .style('color', function(d) { return d.color; })
+
+  letters.exit()
+    .transition()
+    .duration(1000)
+    .style('top', '-150px')
+    .remove();
+
+}
+
+function renderHome(container) {
+  container.html(document.querySelector('#home').innerHTML);
+  container.selectAll('h2.project')
+    .data(projects)
+    .enter()
+    .append('h2')
+    .classed('project', true)
+    .append('a')
+    .attr('href', function(d) { return '#' + d.slug; })
+    .text(function(d) { return d.title; });
+}
+
+function renderProject(container, slug) {
+  var project = projects.filter(function(d) { return d.slug === slug; })[0];
+
+  container.html('');
+  container.append('h1')
+    .append('a')
+    .attr('href', '#')
+    .text('Toph Tucker');
+
+  container.append('h2').text(project.title);
+  container.append('p').html(project.date);
+  container.append('p').html(project.byline);
+  container.append('p').html(project.description);
+}
+
+function handleNav() {
+  console.log('go to ', window.location.hash);
+  if(window.location.hash === '' || window.location.hash === '#') {
+    renderHome(d3.select('.underlying'));
+  } else {
+    renderProject(d3.select('.underlying'), window.location.hash.split('#')[1]);
+  }
+
+  d3.select('.underlying')
+    .each(function() {
+      split(this);
+      render(computePositions(this));
+    });
+}
+
+window.addEventListener("hashchange", handleNav, false);
 
 </script>
 
