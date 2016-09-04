@@ -168,7 +168,14 @@ function render(data) {
   letters.enter().append('span')
     .text(function(d) { return d.letter; })
     .text(function(d) { return d.letter; })
-    .style('left', function() { return '1000px'; })
+    .each(function(d) {
+      var r = Math.sqrt(Math.pow(innerWidth,2) + Math.pow(innerHeight,2)) / 2;
+      var theta = Math.random() * 2 * Math.PI;
+      d.x0 = (innerWidth/2 + r * Math.cos(theta));
+      d.y0 = (innerHeight/2 + r * Math.sin(theta));
+    })
+    .style('left', function(d) { return d.x0 + 'px'; })
+    .style('top', function(d) { return d.y0 + 'px'; })
   .merge(letters)
     .on('click', function(d) {
       if(d.href) window.location = d.href;
@@ -183,12 +190,19 @@ function render(data) {
     .style('color', function(d) { return d.color; })
 
   letters.exit()
-    .transition()
+    .each(function(d) {
+      var r = Math.sqrt(Math.pow(innerWidth,2) + Math.pow(innerHeight,2)) / 2;
+      var theta = Math.random() * 2 * Math.PI;
+      d.x0 = (innerWidth/2 + r * Math.cos(theta));
+      d.y0 = (innerHeight/2 + r * Math.sin(theta));
+    })
+    .transition('exiting')
     .duration(1000)
-    .style('top', '-150px')
+    .style('left', function(d) { return d.x0 + 'px'; })
+    .style('top', function(d) { return d.y0 + 'px'; })
     .remove();
-
 }
+
 
 function renderHome(container) {
   container.html(document.querySelector('#home').innerHTML);
