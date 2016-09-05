@@ -70,6 +70,7 @@ h1, h2, h3 {
 </body>
 
 <script src="d3.v4.js"></script>
+<script src='improvedNoise.js'></script>
 <script>
 
 var projects = [
@@ -106,7 +107,8 @@ var letterSim = d3.forceSimulation()
   .force("x", d3.forceX(function(d) { return d.x1; }))
   .force("y", d3.forceY(function(d) { return d.y1; }))
   .force("mouse", forceMouse())
-  .force("motion", forceMotion());
+  .force("motion", forceMotion())
+  .force("noise", forceNoise());
 
 handleNav();
 window.addEventListener("hashchange", handleNav, false);
@@ -253,6 +255,7 @@ function renderProject(container, slug) {
   container.append('h2').text(project.title);
   container.append('p').html(project.date);
   container.append('p').html(project.byline);
+  container.append('a').attr('href', project.url).text(project.url);
   container.append('p').html(project.description);
 }
 
@@ -286,6 +289,41 @@ function forceMouse() {
       var dist = distance(mouse, [node.x,node.y]);
       node.vx += (mouse[0] - node.x) * 1 / dist;
       node.vy += (mouse[1] - node.y) * 1 / dist;
+    }
+  }
+
+  force.initialize = function(_) {
+    nodes = _;
+  }
+
+  return force;
+
+}
+
+function forceNoise() {
+
+  var nodes,
+      mouse = [-100,-100],
+      noiseScale = 300,
+      noiseStrength = 10,
+      noise = noiser(4,.8);
+
+  // d3.select('html').on('mousemove', function() {
+  //   mouse = d3.mouse(this);
+  // });
+
+  function force(alpha) {
+    if(innerWidth < 500) return;
+    for (var i = 0, n = nodes.length, node, k = alpha; i < n; ++i) {
+      node = nodes[i];
+      
+      var angle = noise(node.x / noiseScale, node.y / noiseScale) * noiseStrength;
+      var driftX =  Math.cos(angle) * .5;
+      var driftY = -Math.sin(angle) * .5;
+
+      node.vx += driftX;
+      node.vy += driftY;
+
     }
   }
 
