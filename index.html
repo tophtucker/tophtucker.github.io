@@ -104,9 +104,9 @@ var projects = [
 
 var letterSim = d3.forceSimulation()
   .alphaDecay(0)
-  .force("x", d3.forceX(function(d) { return d.x1; }))
-  .force("y", d3.forceY(function(d) { return d.y1; }))
-  .force("mouse", forceMouse())
+  .force("x", d3.forceX(function(d) { return d.x1; }).strength(.05))
+  .force("y", d3.forceY(function(d) { return d.y1; }).strength(.05))
+  // .force("mouse", forceMouse())
   .force("motion", forceMotion())
   .force("noise", forceNoise());
 
@@ -278,7 +278,7 @@ function forceMouse() {
   var nodes,
       mouse = [0,0];
 
-  d3.select('html').on('mousemove', function() {
+  d3.select('html').on('mousemove.forceMouse', function() {
     mouse = d3.mouse(this);
   })
 
@@ -308,18 +308,19 @@ function forceNoise() {
       noiseStrength = 10,
       noise = noiser(4,.8);
 
-  // d3.select('html').on('mousemove', function() {
-  //   mouse = d3.mouse(this);
-  // });
+  d3.select('html').on('mousemove.forceNoise', function() {
+    mouse = d3.mouse(this);
+  });
 
   function force(alpha) {
     if(innerWidth < 500) return;
     for (var i = 0, n = nodes.length, node, k = alpha; i < n; ++i) {
       node = nodes[i];
-      
+
+      var dist = distance(mouse, [node.x,node.y]);
       var angle = noise(node.x / noiseScale, node.y / noiseScale) * noiseStrength;
-      var driftX =  Math.cos(angle) * .5;
-      var driftY = -Math.sin(angle) * .5;
+      var driftX =  Math.cos(angle) * .00001 * Math.pow(dist,2);
+      var driftY = -Math.sin(angle) * .00001 * Math.pow(dist,2);
 
       node.vx += driftX;
       node.vy += driftY;
@@ -371,7 +372,6 @@ function forceMotion() {
     nodes = _;
   }
 
-  // not the focus here, but it also shows rotation!
   function handleOrientation(e) {
     if(e.gamma === null || e.beta === null || e.alpha === null) return;
     rotation = {
@@ -381,7 +381,6 @@ function forceMotion() {
     }
   }
 
-  // accelerate according to z-axis device motion
   function handleMotion(e) {
     if(e.acceleration.x === null || e.acceleration.y === null || e.acceleration.z === null) return;
     acceleration = {
