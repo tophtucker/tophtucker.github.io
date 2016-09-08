@@ -31,6 +31,14 @@ h1, h2, h3 {
   position: absolute;
 }
 
+svg {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
 
 @media screen and (min-width: 320px) {
   body {
@@ -51,9 +59,7 @@ h1, h2, h3 {
 
   <div class="overlay"></div>
 
-  <!-- <template id="home">
-    <h1>T</h1>
-  </template> -->
+  <svg></svg>
 
   <template id="home">
     <h1>Toph Tucker</h1>
@@ -72,6 +78,15 @@ h1, h2, h3 {
 <script src="d3.v4.js"></script>
 <script src='improvedNoise.js'></script>
 <script>
+
+var noiseScale = 300,
+    noiseStrength = 10,
+    noise = noiser(4,.8);
+
+var mouse = [-100,-100];
+d3.select('html').on('mousemove.forceMouse', function() {
+  mouse = d3.mouse(this);
+})
 
 var projects = [
   {
@@ -93,12 +108,28 @@ var projects = [
   },
 
   {
+    title: 'What Is Code'
+  },
+
+  {
+    title: 'MTA spaghetti'
+  },
+
+  {
+    title: 'Romeo & Juliet'
+  },
+
+  {
     title: 'Experiments in typography',
     slug: 'experiments-in-typography',
     url: 'http://www.tophtucker.com/type/',
     date: 'April 2015',
     byline: '',
     description: '“Plain text” is sometimes treated (especially by programmers!) like a solved problem. You have these letters, proportionally sized and spaced and kerned, and one comes after the next, and they wrap onto lines in some grid. If you want to get fancy maybe you have ligatures. Watching the designers at Businessweek – who can, like, do valley girl intonation in type — disabused me of that worldview. Lots of people are trying great things and of course it’s hard to compete with convention on a meaningful scale here, but I’ll try — nothing fancy with the fonts here per se, just some more dynamic setting.'
+  },
+
+  {
+    title: 'The Bowdoin Orient'
   }
 ];
 
@@ -275,12 +306,7 @@ function handleNav() {
 
 function forceMouse() {
 
-  var nodes,
-      mouse = [0,0];
-
-  d3.select('html').on('mousemove.forceMouse', function() {
-    mouse = d3.mouse(this);
-  })
+  var nodes;
 
   function force(alpha) {
     if(innerWidth < 500) return;
@@ -302,15 +328,7 @@ function forceMouse() {
 
 function forceNoise() {
 
-  var nodes,
-      mouse = [-100,-100],
-      noiseScale = 300,
-      noiseStrength = 10,
-      noise = noiser(4,.8);
-
-  d3.select('html').on('mousemove.forceNoise', function() {
-    mouse = d3.mouse(this);
-  });
+  var nodes;
 
   function force(alpha) {
     if(innerWidth < 500) return;
@@ -394,11 +412,89 @@ function forceMotion() {
 
 }
 
+function forceTorus() {
+  var nodes;
+  function force(alpha) {
+    for (var i = 0, n = nodes.length, node, k = alpha; i < n; ++i) {
+      node = nodes[i];
+      if(node.x > innerWidth) node.x = 0;
+      if(node.x < 0) node.x = innerWidth;
+      if(node.y > innerHeight) node.y = 0;
+      if(node.y < 0) node.y = innerHeight;
+    }
+  }
+  force.initialize = function(_) {
+    nodes = _;
+  }
+  return force;
+}
+
+function forceMortality() {
+  var nodes;
+  function force(alpha) {
+    for (var i = 0, n = nodes.length, node, k = alpha; i < n; ++i) {
+      node = nodes[i];
+      // node.r *= .99;
+      if(Math.random() > 0.99) {
+        node.x = Math.random() * innerWidth;
+        node.y = Math.random() * innerHeight;
+      }
+    }
+  }
+  force.initialize = function(_) {
+    nodes = _;
+  }
+  return force;
+}
+
 function distance(a,b) {
   var dx = b[0] - a[0];
   var dy = b[1] - a[1];
   return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 }
+
+////////////////////////////////
+///// BACKGROUND PARTICLES /////
+////////////////////////////////
+
+var particleSim = d3.forceSimulation()
+  .alphaDecay(0)
+  .force("motion", forceMotion())
+  .force("noise", forceNoise())
+  .force("torus", forceTorus())
+  .force("mortality", forceMortality());
+
+function renderParticles() {
+
+  var particles = d3.range(500).map(function(d) {
+    return {
+      x: Math.random() * innerWidth,
+      y: Math.random() * innerHeight,
+      vx: 0,
+      vy: 0,
+      r: 1,
+      color: '#999'
+    }
+  });
+
+  var particle = d3.select('svg').selectAll('circle')
+    .data(particles)
+    .enter()
+    .append('circle')
+    .style('fill', function(d) { return d.color; })
+    .attr('r', function(d) { return d.r; });
+
+  particleSim
+    .nodes(particles)
+    .on('tick', function() {
+      particle
+        .attr('cx', function(d) { return d.x; })
+        .attr('cy', function(d) { return d.y; })
+        .attr('r', function(d) { return d.r; });
+    });
+}
+
+renderParticles();
 
 </script>
 
