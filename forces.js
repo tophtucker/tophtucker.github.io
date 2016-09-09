@@ -150,18 +150,23 @@ function forceMotion() {
 }
 
 function forceTorus() {
-  var nodes;
+  var nodes,
+      buffer = 20;
   function force(alpha) {
     for (var i = 0, n = nodes.length, node, k = alpha; i < n; ++i) {
       node = nodes[i];
-      if(node.x > innerWidth) node.x = 0;
-      if(node.x < 0) node.x = innerWidth;
-      if(node.y > innerHeight) node.y = 0;
-      if(node.y < 0) node.y = innerHeight;
+      if(node.x > innerWidth + buffer) node.x = -buffer;
+      if(node.x < -buffer) node.x = innerWidth + buffer;
+      if(node.y > innerHeight + buffer) node.y = -buffer;
+      if(node.y < -buffer) node.y = innerHeight + buffer;
     }
   }
   force.initialize = function(_) {
     nodes = _;
+  }
+  force.buffer = function(_) {
+    buffer = _;
+    return force;
   }
   return force;
 }
@@ -193,7 +198,6 @@ function forceWander() {
   var nodes;
 
   function force(alpha) {
-    if(innerWidth < 500) return;
     for (var i = 0, n = nodes.length, node, k = alpha; i < n; ++i) {
       node = nodes[i];
       node.vx += 0.2 * (Math.random() - .5) - 0.01 * node.vx;
@@ -203,6 +207,31 @@ function forceWander() {
 
   force.initialize = function(_) {
     nodes = _;
+  }
+
+  return force;
+
+}
+
+function forceMouseVortex() {
+
+  var nodes;
+
+  function force(alpha) {
+    if(innerWidth < 500) return;
+    for (var i = 0, n = nodes.length, node, k = alpha; i < n; ++i) {
+      node = nodes[i];
+      var dist = distance(mouse, [node.x,node.y]);
+      node.vx -= node.attraction * 0.000001 * (node.x - mouse[0]) * dist;
+      node.vy -= node.attraction * 0.000001 * (node.y - mouse[1]) * dist;
+    }
+  }
+
+  force.initialize = function(_) {
+    nodes = _;
+    nodes.forEach(function(node) {
+      node.attraction = Math.random();
+    })
   }
 
   return force;

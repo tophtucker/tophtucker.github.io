@@ -88,6 +88,7 @@ d3.select('html').on('mousemove', function() {
 
 var letterSim = d3.forceSimulation()
   .alphaDecay(0)
+  // .velocityDecay(0)
   .force("x", d3.forceX(function(d) { return d.x1; }).strength(.05))
   .force("y", d3.forceY(function(d) { return d.y1; }).strength(.05))
   .force("motion", forceMotion())
@@ -262,9 +263,11 @@ function handleNav() {
 
 var particleSim = d3.forceSimulation()
   .alphaDecay(0)
-  .force("noise", forceNoise().strength(1).random(2).chaos(10).scale(300).offset(-1).mouse(true))
-  .force("torus", forceTorus())
-  .force("mortality", forceMortality());
+  .velocityDecay(0.02)
+  // .force("noise", forceNoise().strength(1).random(2).chaos(10).scale(300).offset(-1).mouse(true))
+  // .force("torus", forceTorus())
+  .force("mouse", forceMouseVortex())
+  // .force("mortality", forceMortality());
 
 function renderParticles() {
 
@@ -273,9 +276,9 @@ function renderParticles() {
     return {
       x: Math.random() * innerWidth,
       y: Math.random() * innerHeight,
-      vx: 0,
-      vy: 0,
-      r: 50,
+      vx: Math.random() * 10 - 5,
+      vy: Math.random() * 10 - 5,
+      r: Math.random() * 100,
       color: color
     }
   });
@@ -296,6 +299,14 @@ function renderParticles() {
         .attr('r', function(d) { return d.r; })
         .style('opacity', .2);
     });
+
+  d3.select('html').on('click.particles', function() {
+    particles.forEach(function(node) {
+      var dist = distance(mouse, [node.x,node.y]);
+      node.vx += 10 * (node.x - mouse[0]) / dist;
+      node.vy += 10 * (node.y - mouse[1]) / dist;
+    })
+  })
 }
 
 renderParticles();
