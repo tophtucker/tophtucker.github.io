@@ -18,15 +18,22 @@ var projects = [
   },
 
   {
-    title: 'What Is Code'
+    title: 'What Is Code',
+    slug: 'what-is-code',
+    url: 'http://bloomberg.com/whatiscode',
+    date: '',
+    byline: 'with Paul Ford, Steph Davidson, Adam Pearce; managed and edited by Josh Tyrangiel, Joshua Topolsky, Jim Aley; so many others',
+    description: ''
   },
 
   {
-    title: 'MTA spaghetti'
+    title: 'MTA spaghetti',
+    description: 'stuff'
   },
 
   {
-    title: 'Romeo & Juliet'
+    title: 'Romeo & Juliet',
+    description: 'stuff'
   },
 
   {

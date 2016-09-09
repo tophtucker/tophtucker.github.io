@@ -262,20 +262,21 @@ function handleNav() {
 
 var particleSim = d3.forceSimulation()
   .alphaDecay(0)
-  .force("noise", forceNoise().strength(.1).random(1))
+  .force("noise", forceNoise().strength(1).random(2).chaos(10).scale(300).offset(-1).mouse(true))
   .force("torus", forceTorus())
   .force("mortality", forceMortality());
 
 function renderParticles() {
 
   var particles = d3.range(50).map(function(d) {
+    var color = "#" + Math.random().toString(16).slice(2, 8);
     return {
       x: Math.random() * innerWidth,
       y: Math.random() * innerHeight,
       vx: 0,
       vy: 0,
-      r: 1,
-      color: '#999'
+      r: 50,
+      color: color
     }
   });
 
@@ -292,7 +293,8 @@ function renderParticles() {
       particle
         .attr('cx', function(d) { return d.x; })
         .attr('cy', function(d) { return d.y; })
-        .attr('r', function(d) { return d.r; });
+        .attr('r', function(d) { return d.r; })
+        .style('opacity', .2);
     });
 }
 

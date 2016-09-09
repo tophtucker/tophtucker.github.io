@@ -25,8 +25,10 @@ function forceNoise() {
   var nodes,
       strength = 1,
       random = 0,
-      noiseScale = 300,
-      noiseStrength = 10,
+      scale = 300,
+      chaos = 10,
+      offset = 0,
+      mouseEffect = true,
       noise = noiser(4,.8);
 
   function force(alpha) {
@@ -35,12 +37,18 @@ function forceNoise() {
       node = nodes[i];
 
       var dist = distance(mouse, [node.x,node.y]);
-      var angle = noise(node.x / noiseScale, node.y / noiseScale) * noiseStrength;
-      var driftX =  Math.cos(angle) * .00001 * Math.pow(dist,2);
-      var driftY = -Math.sin(angle) * .00001 * Math.pow(dist,2);
+      var angle = (noise(node.x / scale, node.y / scale) + offset) * chaos;
 
-      node.vx += driftX * strength + Math.random() * random;
-      node.vy += driftY * strength + Math.random() * random;
+      var driftX =  Math.cos(angle);
+      var driftY = -Math.sin(angle);
+
+      if(mouseEffect) {
+        driftX *= .00001 * Math.pow(dist,2);
+        driftY *= .00001 * Math.pow(dist,2);
+      }
+
+      node.vx += driftX * strength + (Math.random() * random - random/2);
+      node.vy += driftY * strength + (Math.random() * random - random/2);
 
     }
   }
@@ -51,6 +59,26 @@ function forceNoise() {
 
   force.strength = function(_) {
     strength = _;
+    return force;
+  }
+
+  force.chaos = function(_) {
+    chaos = _;
+    return force;
+  }
+
+  force.scale = function(_) {
+    scale = _;
+    return force;
+  }
+
+  force.offset = function(_) {
+    offset = _;
+    return force;
+  }
+
+  force.mouse = function(_) {
+    mouseEffect = _;
     return force;
   }
 
@@ -143,8 +171,9 @@ function forceMortality() {
   function force(alpha) {
     for (var i = 0, n = nodes.length, node, k = alpha; i < n; ++i) {
       node = nodes[i];
-      // node.r *= .99;
-      if(Math.random() > 0.99) {
+      node.r *= node.dr;
+      if(node.r < 0.01) {
+        node.r = 100;
         node.x = Math.random() * innerWidth;
         node.y = Math.random() * innerHeight;
       }
@@ -152,6 +181,9 @@ function forceMortality() {
   }
   force.initialize = function(_) {
     nodes = _;
+    nodes.forEach(function(d) {
+      d.dr = 1-Math.random()*.01;
+    });
   }
   return force;
 }
