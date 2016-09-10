@@ -153,6 +153,7 @@ function forceTorus() {
   var nodes,
       buffer = 20;
   function force(alpha) {
+    if(isHovering) return;
     for (var i = 0, n = nodes.length, node, k = alpha; i < n; ++i) {
       node = nodes[i];
       if(node.x > innerWidth + buffer) node.x = -buffer;
@@ -219,18 +220,19 @@ function forceMouseVortex() {
 
   function force(alpha) {
     if(innerWidth < 500) return;
+    if(!isHovering) return;
     for (var i = 0, n = nodes.length, node, k = alpha; i < n; ++i) {
       node = nodes[i];
       var dist = distance(mouse, [node.x,node.y]);
-      node.vx -= node.attraction * 0.000001 * (node.x - mouse[0]) * dist;
-      node.vy -= node.attraction * 0.000001 * (node.y - mouse[1]) * dist;
+      node.vx -= node.attraction * .1 * (node.x - mouse[0]) / Math.sqrt(dist);
+      node.vy -= node.attraction * .1 * (node.y - mouse[1]) / Math.sqrt(dist);
     }
   }
 
   force.initialize = function(_) {
     nodes = _;
     nodes.forEach(function(node) {
-      node.attraction = Math.random();
+      node.attraction = .5 + Math.random()*.5;
     })
   }
 
