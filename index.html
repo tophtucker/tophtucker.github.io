@@ -42,6 +42,16 @@ svg {
   overflow: visible;
 }
 
+canvas {
+  position: absolute;
+  z-index: -2;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: .2;
+}
+
 @media screen and (min-width: 320px) {
   body {
     font-size: calc(14px + 8 * ((100vw - 320px) / 960));
@@ -84,6 +94,8 @@ svg {
 
   <svg></svg>
 
+  <canvas></canvas>
+
   <template id="home">
     <h1>Toph Tucker</h1>
     <p>
@@ -104,7 +116,11 @@ svg {
 <script src='projects.js'></script>
 <script>
 
-var particles;
+var docWidth = innerWidth,
+    docHeight = innerHeight;
+
+var particles,
+    trailAlpha = .2;
 
 var mouse = [-100,-100];
 d3.select('html').on('mousemove', function() {
@@ -296,8 +312,10 @@ function renderProject(container, slug) {
 
 function handleNav() {
   if(window.location.hash === '' || window.location.hash === '#') {
+    trailAlpha = .4;
     renderHome(d3.select('.underlying'));
   } else {
+    trailAlpha = .01;
     renderProject(d3.select('.underlying'), window.location.hash.split('#')[1]);
   }
 
@@ -322,6 +340,11 @@ var particleSim = d3.forceSimulation()
 
 function renderParticles() {
 
+  var ctx = d3.select('canvas')
+    .attr('width', docWidth)
+    .attr('height', docHeight)
+    .node().getContext("2d");
+
   particles = d3.range(20).map(function(d) {
     var color = "#" + Math.random().toString(16).slice(2, 8);
     return {
@@ -344,11 +367,23 @@ function renderParticles() {
   particleSim
     .nodes(particles)
     .on('tick', function() {
+
+      ctx.fillStyle = '#fff';
+      ctx.globalAlpha = trailAlpha;
+      ctx.fillRect(0,0,innerWidth,innerHeight);
+      ctx.globalAlpha = 1;
+
       particle
         .attr('cx', function(d) { return d.x; })
         .attr('cy', function(d) { return d.y; })
         .attr('r', function(d) { return d.r; })
-        .style('opacity', .2);
+        .style('opacity', .2)
+        .each(function(d) {
+          ctx.fillStyle = d.color;
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.r, 0, 2*Math.PI);
+          ctx.fill();
+        });
     });
 }
 
