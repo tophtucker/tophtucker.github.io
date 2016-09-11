@@ -50,6 +50,7 @@ canvas {
   width: 100%;
   height: 100%;
   opacity: .2;
+  /*display: none;*/
 }
 
 @media screen and (min-width: 320px) {
@@ -120,14 +121,14 @@ var docWidth = innerWidth,
     docHeight = innerHeight;
 
 var particles,
-    trailAlpha = .2;
+    trailAlpha = 0,
+    isHovering = false,
+    project;
 
 var mouse = [-100,-100];
 d3.select('html').on('mousemove', function() {
   mouse = d3.mouse(this);
 })
-
-var isHovering = false;
 
 var letterSim = d3.forceSimulation()
   .alphaDecay(0)
@@ -137,6 +138,17 @@ var letterSim = d3.forceSimulation()
   .force("motion", forceMotion())
   .force("noise", forceNoise());
 
+var particleSim = d3.forceSimulation()
+  .alphaDecay(0)
+  .velocityDecay(0.02)
+  // .force("noise", forceNoise().strength(.01).random(2).chaos(10).scale(300).offset(-1).mouse(true))
+  // .force("torus", forceTorus())
+  // .force("mouse", forceMouseVortex())
+  // .force("grow", forceGrow())
+  // .force("mta", forceMTA())
+  // .force("mortality", forceMortality());
+
+renderParticles();
 handleNav();
 window.addEventListener("hashchange", handleNav, false);
 
@@ -283,6 +295,43 @@ function render(data) {
 }
 
 function renderHome(container) {
+
+  // unload any project-specific forces
+  if(project !== undefined && project.forces !== undefined) {
+    project.forces.forEach(function(force) {
+      particleSim.force(force[0], null);
+    });
+  }
+
+  d3.select('svg').selectAll('circle')
+    .transition()
+    .duration(2000)
+    .tween("attr.colors", function(d,i) {
+      var node = this, 
+          i = d3.interpolateRgb(d.color, randomColor());
+      return function(t) {
+        d.color = i(t);
+      };
+    })
+    .tween("attr.radii", function(d,i) {
+      var node = this, 
+          i = d3.interpolateNumber(d.r, Math.random() * 10);
+      return function(t) {
+        d.r = i(t);
+      };
+    })
+    .tween("attr.trails", function() {
+      var i = d3.interpolateNumber(trailAlpha, 0);
+      return function(t) {
+        trailAlpha = i(t);
+      };
+    });
+
+  particleSim
+    .force("noise", forceNoise().strength(.01).random(2).chaos(10).scale(300).offset(-1).mouse(true))
+    .force("torus", forceTorus())
+    .force("mouse", forceMouseVortex());
+
   container.html(document.querySelector('#home').innerHTML);
   container.selectAll('h2.project')
     .data(projects)
@@ -295,7 +344,46 @@ function renderHome(container) {
 }
 
 function renderProject(container, slug) {
-  var project = projects.filter(function(d) { return d.slug === slug; })[0];
+  project = projects.filter(function(d) { return d.slug === slug; })[0];
+
+  if(project.forces !== undefined) {
+    project.forces.forEach(function(force) {
+      particleSim.force(force[0], force[1]);
+    });
+  }
+
+  var transition = d3.select('svg').selectAll('circle')
+    .transition()
+    .duration(2000);
+  if(project.colors) {
+    transition
+      .tween("attr.colors", function(d,i) {
+        var node = this, 
+            i = d3.interpolateRgb(d.color, project.colors(d,i));
+        return function(t) {
+          d.color = i(t);
+        };
+      });
+  }
+  if(project.radii) {
+    transition
+      .tween("attr.radii", function(d,i) {
+        var node = this, 
+            i = d3.interpolateNumber(d.r, project.radii(d,i));
+        return function(t) {
+          d.r = i(t);
+        };
+      });
+  }
+  if(project.trails) {
+    transition
+      .tween("attr.trails", function() {
+        var i = d3.interpolateNumber(trailAlpha, project.trails);
+        return function(t) {
+          trailAlpha = i(t);
+        };
+      });
+  }
 
   container.html('');
   container.append('h1')
@@ -312,10 +400,8 @@ function renderProject(container, slug) {
 
 function handleNav() {
   if(window.location.hash === '' || window.location.hash === '#') {
-    trailAlpha = .4;
     renderHome(d3.select('.underlying'));
   } else {
-    trailAlpha = .01;
     renderProject(d3.select('.underlying'), window.location.hash.split('#')[1]);
   }
 
@@ -330,14 +416,6 @@ function handleNav() {
 ///// BACKGROUND PARTICLES /////
 ////////////////////////////////
 
-var particleSim = d3.forceSimulation()
-  .alphaDecay(0)
-  .velocityDecay(0.02)
-  .force("noise", forceNoise().strength(.01).random(2).chaos(10).scale(300).offset(-1).mouse(true))
-  .force("torus", forceTorus())
-  .force("mouse", forceMouseVortex())
-  // .force("mortality", forceMortality());
-
 function renderParticles() {
 
   var ctx = d3.select('canvas')
@@ -346,14 +424,14 @@ function renderParticles() {
     .node().getContext("2d");
 
   particles = d3.range(20).map(function(d) {
-    var color = "#" + Math.random().toString(16).slice(2, 8);
     return {
       x: Math.random() * innerWidth,
       y: Math.random() * innerHeight,
       vx: Math.random() * 10 - 5,
       vy: Math.random() * 10 - 5,
       r: Math.random() * 10,
-      color: color
+      // r1: ,
+      color: randomColor()
     }
   });
 
@@ -369,13 +447,14 @@ function renderParticles() {
     .on('tick', function() {
 
       ctx.fillStyle = '#fff';
-      ctx.globalAlpha = trailAlpha;
+      ctx.globalAlpha = 1 - trailAlpha;
       ctx.fillRect(0,0,innerWidth,innerHeight);
       ctx.globalAlpha = 1;
 
       particle
         .attr('cx', function(d) { return d.x; })
         .attr('cy', function(d) { return d.y; })
+        .style('fill', function(d) { return d.color; })
         .attr('r', function(d) { return d.r; })
         .style('opacity', .2)
         .each(function(d) {
@@ -395,7 +474,9 @@ function scatterParticles() {
   })
 }
 
-renderParticles();
+function randomColor() {
+  return "#" + Math.random().toString(16).slice(2, 8);
+}
 
 </script>
 
