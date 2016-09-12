@@ -140,15 +140,9 @@ var letterSim = d3.forceSimulation()
 
 var particleSim = d3.forceSimulation()
   .alphaDecay(0)
-  .velocityDecay(0.02)
-  // .force("noise", forceNoise().strength(.01).random(2).chaos(10).scale(300).offset(-1).mouse(true))
-  // .force("torus", forceTorus())
-  // .force("mouse", forceMouseVortex())
-  // .force("grow", forceGrow())
-  // .force("mta", forceMTA())
-  // .force("mortality", forceMortality());
+  .velocityDecay(0.02);
 
-renderParticles();
+if(innerWidth > 500) renderParticles();
 handleNav();
 window.addEventListener("hashchange", handleNav, false);
 
