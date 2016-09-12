@@ -332,6 +332,55 @@ function forceISIS() {
   return force;
 }
 
+function forceSometimesExplode(_) {
+  var nodes,
+      strength = _ || 25;
+  function force(alpha) {
+    if(Math.random() < .998) return;
+    for (var i = 0, n = nodes.length, node, k = alpha; i < n; ++i) {
+      node = nodes[i];
+      node.vx += Math.random() * strength - strength/2;
+      node.vy += Math.random() * strength - strength/2;
+    }
+  }
+  force.initialize = function(_) {
+    nodes = _;
+  }
+  return force;
+}
+
+function forceRomeo() {
+  var nodes,
+      a = (Math.random()*2-1),
+      b = (Math.random()*2-1),
+      c = (Math.random()*2-1),
+      d = (Math.random()*2-1);
+  function force(alpha) {
+    for (var i = 0, n = nodes.length, node, k = alpha; i < n; ++i) {
+      node = nodes[i];
+
+      if(Math.random() > .99) {
+        node.x = Math.random() * innerWidth;
+        node.y = Math.random() * innerHeight;
+      }
+      
+      var x = (node.x - innerWidth/2) / innerWidth;
+      var y = -(node.y - innerHeight/2) / innerHeight;
+
+      var newX = a * x + b * y;
+      var newY = c * x + d * y;
+
+      node.vx = newX * 10;
+      node.vy = -newY * 10;
+
+    }
+  }
+  force.initialize = function(_) {
+    nodes = _;
+  }
+  return force;
+}
+
 function forceWander() {
 
   var nodes;
@@ -376,6 +425,60 @@ function forceMouseVortex() {
 
   return force;
 
+}
+
+function forceVortex(_, __) {
+
+  var active = true,
+      clockwise = 1,
+
+      nodes,
+      fork,
+      forkAngle = 0,
+
+      strength  = _   || .01,
+      radius    = __  || 100;
+
+  function force(alpha) {
+
+    if(!active) return;
+
+    forkAngle += clockwise * strength;
+
+    for (var i = 0, n = nodes.length, node, k = alpha; i < n; ++i) {
+      node = nodes[i];
+      node.forking = distance([node.x, node.y], mouse) < radius;
+      if(node.forking) {
+        node.vx += clockwise * strength * -(node.y - mouse[1]);
+        node.vy += clockwise * strength * (node.x - mouse[0]);
+      }
+    }
+  }
+
+  force.initialize = function(_) {
+    nodes = _;
+  }
+
+  return force;
+
+}
+
+function forceRespawn() {
+  var nodes;
+  function force(alpha) {
+    for (var i = 0, n = nodes.length, node, k = alpha; i < n; ++i) {
+      node = nodes[i];
+      if(Math.random() > .95) {
+        node.x = Math.random() * innerWidth;
+        node.y = Math.random() * innerHeight;
+        node.r = Math.random() * 50;
+      }
+    }
+  }
+  force.initialize = function(_) {
+    nodes = _;
+  }
+  return force;
 }
 
 function distance(a,b) {

@@ -33,7 +33,7 @@ h1, h2, h3 {
 }
 
 svg {
-  position: absolute;
+  position: fixed;
   z-index: -1;
   top: 0;
   left: 0;
@@ -43,7 +43,7 @@ svg {
 }
 
 canvas {
-  position: absolute;
+  position: fixed;
   z-index: -2;
   top: 0;
   left: 0;
@@ -127,7 +127,7 @@ var particles,
 
 var mouse = [-100,-100];
 d3.select('html').on('mousemove', function() {
-  mouse = d3.mouse(this);
+  mouse = [d3.mouse(this)[0], d3.mouse(this)[1] - document.body.scrollTop];
 })
 
 var letterSim = d3.forceSimulation()
@@ -477,6 +477,25 @@ function scatterParticles() {
 function randomColor() {
   return "#" + Math.random().toString(16).slice(2, 8);
 }
+
+
+var comments = [
+  "God how annoying is this whole conceit?",
+  "All this flowy-text stuff was basically Tracy Ma and Alex Shoukas’s idea for the Design Issue, the conference site of which does all this much better.",
+  "Yes it’s Times New Roman. Someone tried to recommend something fancier and I was like no, that is not how I am trying to differentiate here. Times is great.",
+  "None of these really need standalone project pages and, like, bullshit artist’s statements, but I just really wanted to use the text transitions. Hm. Maybe all this was ill-conceived.",
+  "I have been lucky to work with some brilliant people and look forward to continuing to water down misunderstandings of their ideas for many years to come.",
+  "I used to have some tongue-in-cheek “endorsements” for haters in the comments section. I’d love to bring them back. I could have a whole endorsements page. Blessed are the commenters."
+]
+
+function makeComment() {
+  if(!comments.length) return false;
+  d3.shuffle(comments);
+  console.log(comments.pop());
+  setTimeout(makeComment, Math.random() * 10000);
+}
+
+makeComment();
 
 </script>
 
