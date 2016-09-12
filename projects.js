@@ -203,6 +203,8 @@ var projects = [
   }
 ];
 
+// projects = projects.slice(0,3);
+
 d3.shuffle(projects);
 projects.sort(function(a,b) {
   if(a.title == 'Other') return 1;
