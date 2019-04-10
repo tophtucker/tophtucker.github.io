@@ -4,96 +4,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="stylesheet" href="styles.css">
 
 <title>Toph Tucker</title>
-
-<style>
-
-body {
-  font-size: 14px;
-  margin: 0;
-}
-
-h1, h2, h3 {
-  font-weight: normal;
-}
-
-.underlying {
-  opacity: 0;
-  pointer-events: none;
-  max-width: 20em;
-  margin: 1em auto;
-}
-
-.overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.overlay span {
-  position: absolute;
-}
-
-svg {
-  position: absolute;
-  z-index: -1;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-canvas {
-  position: absolute;
-  z-index: -2;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: .2;
-}
-
-@media screen and (min-width: 320px) {
-  body {
-    font-size: calc(14px + 8 * ((100vw - 320px) / 960));
-  }
-}
-@media screen and (min-width: 1280px) {
-  body {
-    font-size: 22px;
-  }
-}
-
-@media screen and (max-width: 500px) {
-  svg, canvas {
-    display: none;
-  }
-}
-
-@keyframes colorcycle {
-  0% {
-    color: red;
-  }
-  20% {
-    color: yellow;
-  }
-  40% {
-    color: #f0f;
-  }
-  60% {
-    color: blue;
-  }
-  80% {
-    color: #0f0;
-  }
-  100% {
-    color: #0ff;
-  }
-}
-
-</style>
 
 <body>
   
@@ -108,11 +21,12 @@ canvas {
   <template id="home">
     <h1>Toph Tucker</h1>
     <p>
-      Web programmer at Kensho, formerly Businessweek. 
+      TBD. Formerly web programming at Kensho and graphics at Businessweek.
       <a href="https://twitter.com/tophtucker/">Twitter</a>, 
-      <a href="https://github.com/tophtucker">GitHub</a>, 
-      <a href="http://bl.ocks.org/tophtucker">bl.ocks</a>,
+      <a href="https://observablehq.com/@tophtucker">Observable</a>,
       <a href="https://medium.com/@tophtucker/">Medium</a>,
+      <a href="http://bl.ocks.org/tophtucker">bl.ocks</a>,
+      <a href="https://github.com/tophtucker">GitHub</a>, 
       tophtucker@gmail.com
     </p>
   </template>
@@ -131,6 +45,7 @@ var docWidth = innerWidth,
 var particles,
     trailAlpha = 0,
     isHovering = false,
+    hoverSel,
     project;
 
 var isMobile = innerWidth <= 500;
@@ -268,18 +183,17 @@ function render(data) {
     .attr('data-href', function(d) { return d.href; })
     .style('cursor', 'pointer')
     .on('mouseenter', function(d) { 
-      d3.selectAll('[data-href="'+d.href+'"')
-        .style('animation', function() {
-          return (1 + Math.round(Math.random() * 4)) + 's linear infinite alternate colorcycle';
-        });
+      hoverSel = d3.selectAll('[data-href="'+d.href+'"')
       isHovering = true 
     })
     .on('mouseleave', function(d) { 
-      d3.selectAll('[data-href="'+d.href+'"')
-        .style('animation', null);
+      hoverSel.style("text-shadow", null)
+      hoverSel = undefined
       isHovering = false;
     })
     .on('click', function(d) {
+      hoverSel.style("text-shadow", null)
+      hoverSel = undefined
       isHovering = false;
       window.location = d.href;
       scatterParticles();
@@ -479,6 +393,19 @@ function renderParticles() {
           ctx.arc(d.x, d.y, d.r, 0, 2*Math.PI);
           ctx.fill();
         });
+
+      if(hoverSel) {
+        hoverSel.style("text-shadow", function(d, i) {
+          const p = particles[i % particles.length]
+          const angle = Math.atan2(p.y - d.y, p.x - d.x) + Math.PI
+          const dist = Math.sqrt((p.y - d.y) ** 2 + (p.x - d.x) ** 2)
+          const offsetX = dist * Math.cos(angle) / 10
+          const offsetY = dist * Math.sin(angle) / 10
+          return `${offsetX}px ${offsetY}px ${dist / 10}px ${p.color}`
+        })
+      }
+
+      
     });
 }
 
@@ -492,27 +419,10 @@ function scatterParticles() {
 }
 
 function randomColor() {
-  return "#" + Math.random().toString(16).slice(2, 8);
+  return `hsl(${Math.random() * 360}, 50%, 50%)`
 }
 
-
-var comments = [
-  "God how annoying is this whole conceit?",
-  "All this flowy-text stuff was basically Tracy Ma and Alex Shoukas’s idea for the Design Issue, the conference site of which does all this much better.",
-  "Yes it’s Times New Roman. Someone tried to recommend something fancier and I was like no, that is not how I am trying to differentiate here. Times is great.",
-  "None of these really need standalone project pages and, like, bullshit artist’s statements, but I just really wanted to use the text transitions. Hm. Maybe all this was ill-conceived.",
-  "I have been lucky to work with some brilliant people and look forward to continuing to water down misunderstandings of their ideas for many years to come.",
-  "I used to have some tongue-in-cheek “endorsements” for haters in the comments section. I’d love to bring them back. I could have a whole endorsements page. Blessed are the commenters."
-]
-
-function makeComment() {
-  if(!comments.length) return false;
-  d3.shuffle(comments);
-  console.log(comments.pop());
-  setTimeout(makeComment, Math.random() * 10000);
-}
-
-makeComment();
+console.log("All this flowy-text stuff is heavily inspired by Tracy Ma and Alex Shoukas’s work on the 2016 Businessweek Design Issue and George Michael Brower’s FizzyText.")
 
 </script>
 
