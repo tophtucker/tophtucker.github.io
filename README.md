@@ -1,1 +1,1 @@
-# tophtucker.github.io
+[http://web.archive.org/web/*/tophtucker.com](Wayback Machine for tophtucker.com since 2001). Current incarnation is ~v8, since fall 2016. It renders a simple HTML page in the background, then hides it and clones every letter and has them all wandering the page with Perlin noise. Cute lil particles in the background illustrate each page in different ways. When you go from one page to another, the letters transition so that it, like, re-uses all the A’s and B’s and C’s and transitions them to their new spot.
