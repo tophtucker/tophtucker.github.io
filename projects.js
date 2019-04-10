@@ -123,11 +123,11 @@ var projects = [
   },
 
   {
-    title: 'Romeo & Juliet',
-    slug: 'romeo-juliet',
-    date: 'February 14, 2015',
-    url: 'http://bl.ocks.org/tophtucker/214ee520bfdfe8baabe5',
-    description: 'A visualization of Steven Strogatz’s modeling of Romeo and Juliet with ordinary differential equations. It’s more meant to be illuminating about differential equations than about love, but it’s an excuse to think about both. Each person has two personality parameters determining whether they respond positively or negatively to their own feelings for someone else, and whether they respond positively or negatively to another person’s feelings for them. Their initial conditions then doom them to follow some trajectory in that phase space.',
+    title: 'Observable notebooks',
+    slug: 'observable',
+    date: '2018–',
+    url: 'https://observablehq.com/@tophtucker',
+    description: 'Computational essays and graphics, including an exploration of how <a href="https://observablehq.com/@tophtucker/theres-plenty-of-room-in-the-corners">the volume of hyperspheres</a> goes to zero in high dimensions, a visualization of Steven Strogatz’s modeling of <a href="https://observablehq.com/@tophtucker/tales-from-the-romeo-and-juliet-phase-space">Romeo and Juliet</a> with differential equations, some <a href="https://observablehq.com/@tophtucker/re-can-moons-have-moons">orreries</a>, some <a href="https://observablehq.com/@tophtucker/bitcoin-fractal-bubbles">Bitcoin charts</a>, and a <a href="https://observablehq.com/@tophtucker/flag-of-the-popular-vote/3">desecrated flag</a>.',
     trails: 1,
     colors: function() {
       return Math.random() > .5 ? 'pink' : 'lightblue';
@@ -142,6 +142,27 @@ var projects = [
       ['torus', forceTorus()]
     ]
   },
+
+  // {
+  //   title: 'Romeo & Juliet',
+  //   slug: 'romeo-juliet',
+  //   date: 'February 14, 2015',
+  //   url: 'http://bl.ocks.org/tophtucker/214ee520bfdfe8baabe5',
+  //   description: 'A visualization of Steven Strogatz’s modeling of Romeo and Juliet with ordinary differential equations. It’s more meant to be illuminating about differential equations than about love, but it’s an excuse to think about both. Each person has two personality parameters determining whether they respond positively or negatively to their own feelings for someone else, and whether they respond positively or negatively to another person’s feelings for them. Their initial conditions then doom them to follow some trajectory in that phase space.',
+  //   trails: 1,
+  //   colors: function() {
+  //     return Math.random() > .5 ? 'pink' : 'lightblue';
+  //   },
+  //   radii: function() {
+  //     return 10;
+  //   },
+  //   forces: [
+  //     ['noise', null],
+  //     ['mouse', null],
+  //     ['romeo', forceRomeo()],
+  //     ['torus', forceTorus()]
+  //   ]
+  // },
 
   // {
   //   title: 'Flipcharts',
