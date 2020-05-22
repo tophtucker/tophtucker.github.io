@@ -20,7 +20,6 @@ var letterSim = d3.forceSimulation()
   // .velocityDecay(0)
   .force("x", d3.forceX(function(d) { return d.x1; }).strength(.05))
   .force("y", d3.forceY(function(d) { return d.y1; }).strength(.05))
-  .force("motion", forceMotion())
   .force("noise", forceNoise());
 
 
@@ -29,6 +28,19 @@ if(!isMobile) {
     .alphaDecay(0)
     .velocityDecay(0.02);
   renderParticles();
+} else {
+  // if mobile, attach devicemotion
+  // N.B. you can't check if it's already granted;
+  // eagerly awaiting https://developer.mozilla.org/en-US/docs/Web/API/Permissions/query on iOS Safari!
+  d3.select("body").append("button")
+    .attr("class", "permission")
+    .text("Shake on")
+    .on("click", async function () {
+      if (await DeviceMotionEvent.requestPermission() === "granted") {
+        letterSim.force("motion", forceMotion())
+        this.remove()
+      }
+    })
 }
 
 handleNav();
