@@ -127,7 +127,7 @@ var projects = [
     slug: 'observable',
     date: '2018–',
     url: 'https://observablehq.com/@tophtucker',
-    description: 'Computational essays and graphics, including an exploration of how <a href="https://observablehq.com/@tophtucker/theres-plenty-of-room-in-the-corners">the volume of hyperspheres</a> goes to zero in high dimensions, a visualization of Steven Strogatz’s modeling of <a href="https://observablehq.com/@tophtucker/tales-from-the-romeo-and-juliet-phase-space">Romeo and Juliet</a> with differential equations, some <a href="https://observablehq.com/@tophtucker/re-can-moons-have-moons">orreries</a>, some <a href="https://observablehq.com/@tophtucker/bitcoin-fractal-bubbles">Bitcoin charts</a>, and a <a href="https://observablehq.com/@tophtucker/flag-of-the-popular-vote/3">desecrated flag</a>.',
+    description: 'Computational essays and graphics, including a <a href="https://observablehq.com/@tophtucker/inferring-chart-type-from-autocorrelation-and-other-evils">history of correlation</a>, an exploration of how <a href="https://observablehq.com/@tophtucker/theres-plenty-of-room-in-the-corners">the volume of hyperspheres</a> goes to zero in high dimensions, a visualization of Steven Strogatz’s modeling of <a href="https://observablehq.com/@tophtucker/tales-from-the-romeo-and-juliet-phase-space">Romeo and Juliet</a> with differential equations, some <a href="https://observablehq.com/@tophtucker/re-can-moons-have-moons">orreries</a>, some <a href="https://observablehq.com/@tophtucker/bitcoin-fractal-bubbles">Bitcoin charts</a>, and a <a href="https://observablehq.com/@tophtucker/flag-of-the-popular-vote/3">desecrated flag</a>.',
     trails: 1,
     colors: function() {
       return Math.random() > .5 ? 'pink' : 'lightblue';
