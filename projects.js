@@ -103,9 +103,9 @@ var projects = [
   {
     title: 'MTA spaghetti',
     slug: 'mta-spaghetti',
-    url: 'http://bl.ocks.org/tophtucker/raw/81c467db46a37dfaf75cacb70552b818',
+    url: 'https://www.tophtucker.com/mtaspaghetti/',
     date: 'June 2016',
-    description: 'I was walking with my friend and she looked at the subway map and said she had always wanted to twirl it like spaghetti. I thought of that again years later. I actually think a node-and-edge graph representation makes a ton of sense and there are lots more pragmatic applications but I should just try to do that before I say more. Hello visitor to my Web site, are these descriptions just totally superfluous? Yes.',
+    description: 'I was walking with Claire and she looked at the subway map and said she had always wanted to twirl it like spaghetti. I thought of that again years later. I actually think a node-and-edge graph representation makes a ton of sense and there are lots more pragmatic applications but I should just try to do that before I say more. Hello visitor to my Web site, are these descriptions just totally superfluous? Yes.',
     trails: 1,
     colors: function() {
       var c = ['#0039A6','#009B3A','#939598','#955214','#B634BB','#E00034','#FECB00','#FF6319'];
